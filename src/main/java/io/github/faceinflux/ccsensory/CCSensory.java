@@ -1,9 +1,9 @@
-package com.example.mymod;
+package io.github.faceinflux.ccsensory;
 
 import com.mojang.logging.LogUtils;
 import org.slf4j.Logger;
 
-public class ExampleMod {
+public class CCSensory {
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public static void initialize() {

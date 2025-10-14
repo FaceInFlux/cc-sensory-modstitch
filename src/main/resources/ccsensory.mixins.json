@@ -1,5 +1,5 @@
 {
-  "package": "com.example.mymod.mixin",
+  "package": "io.github.faceinflux.ccsensory.mixin",
   "required": true,
   "minVersion": "0.8",
   "injectors": {

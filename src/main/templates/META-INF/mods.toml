@@ -10,12 +10,12 @@ license = "${mod_license}"
     description = '''${mod_description}'''
     authors = "${mod_author}"
 
-[[dependencies.${mod_id}]]
-    modId = "neoforge"
-    mandatory = true
-    ordering = "NONE"
-    side = "BOTH"
-
-[[dependencies.${mod_id}]]
-    modId = "minecraft"
-    mandatory = true
+#[[dependencies.${mod_id}]]
+#    modId = "neoforge"
+#    mandatory = true
+#    ordering = "NONE"
+#    side = "BOTH"
+#
+#[[dependencies.${mod_id}]]
+#    modId = "minecraft"
+#    mandatory = true
