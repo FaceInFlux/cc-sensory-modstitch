@@ -1,5 +1,5 @@
 //? if neoforge {
-package io.github.faceinflux.ccsensory.loaders.neoforge;
+/*package io.github.faceinflux.ccsensory.loaders.neoforge;
 
 import io.github.faceinflux.ccsensory.CCSensory;
 import com.mojang.logging.LogUtils;
@@ -15,4 +15,4 @@ public class NeoforgeEntrypoint {
         CCSensory.initialize();
     }
 }
-//?}
+*///?}

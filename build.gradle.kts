@@ -1,5 +1,5 @@
 plugins {
-    id("dev.isxander.modstitch.base") version "0.5.12"
+    id("dev.isxander.modstitch.base") version "0.7.1-unstable"
 }
 
 fun prop(name: String, consumer: (prop: String) -> Unit) {
@@ -11,16 +11,6 @@ val minecraft = property("deps.minecraft") as String;
 
 modstitch {
     minecraftVersion = minecraft
-
-    // Alternatively use stonecutter.eval if you have a lot of versions to target.
-    // https://stonecutter.kikugie.dev/stonecutter/guide/setup#checking-versions
-    javaTarget = when (minecraft) {
-        "1.20.1" -> 17
-        "1.21.1" -> 21
-        "1.21.7" -> 21
-        "1.21.8" -> 21
-        else -> throw IllegalArgumentException("Please store the java version for ${property("deps.minecraft")} in build.gradle.kts!")
-    }
 
     // If parchment doesnt exist for a version yet you can safely
     // omit the "deps.parchment" property from your versioned gradle.properties
@@ -69,27 +59,12 @@ modstitch {
 
     // ModDevGradle (NeoForge, Forge, Forgelike)
     moddevgradle {
-        enable {
-            if (isModDevGradleLegacy) {
-                prop("deps.forge") { forgeVersion = it }
-            } else {
-                prop("deps.neoform") { neoFormVersion = it }
-                prop("deps.neoforge") { neoForgeVersion = it }
-            }
+        prop("deps.forge") { forgeVersion = it }
+        prop("deps.neoform") { neoFormVersion = it }
+        prop("deps.neoforge") { neoForgeVersion = it }
+        prop("deps.mcp") { mcpVersion = it }
 
-            prop("deps.mcp") { mcpVersion = it }
-        }
-
-        // Configures client and server runs for MDG, it is not done by default
-        defaultRuns()
-
-        // This block configures the `neoforge` extension that MDG exposes by default,
-        // you can configure MDG like normal from here
-        configureNeoforge {
-            runs.all {
-                disableIdeRun()
-            }
-        }
+        defaultRuns() // Add runClient and runServer tasks
     }
 
 //    mixin {

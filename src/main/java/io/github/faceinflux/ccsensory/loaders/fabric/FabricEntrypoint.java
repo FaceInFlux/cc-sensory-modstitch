@@ -1,5 +1,5 @@
 //? if fabric {
-/*package io.github.faceinflux.ccsensory.loaders.fabric;
+package io.github.faceinflux.ccsensory.loaders.fabric;
 
 import io.github.faceinflux.ccsensory.CCSensory;
 import com.mojang.logging.LogUtils;
@@ -15,4 +15,4 @@ public class FabricEntrypoint implements ModInitializer {
         CCSensory.initialize();
     }
 }
-*///?}
+//?}
