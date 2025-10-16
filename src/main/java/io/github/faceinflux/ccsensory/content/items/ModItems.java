@@ -15,10 +15,14 @@ import java.util.function.Supplier;
 public class ModItems {
     public static final Register<Item> register = new Register<Item>();
 
-    private static ResourceKey<Item> itemKey(String name) {
+    public static ResourceKey<Item> itemKey(String name) {
         return ResourceKey.create(
                 Registries.ITEM,
+                //? if >=1.20.6 {
                 ResourceLocation.fromNamespaceAndPath(CCSensory.ID, name)
+                //?} else {
+                /*new ResourceLocation(CCSensory.ID, name)
+                *///?}
         );
     }
 
