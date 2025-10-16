@@ -26,7 +26,11 @@ public class ModItems {
             ResourceKey<Item> key,
             Function<Item.Properties, T> factory,
             Item.Properties properties) {
+        //? if >=1.21.2 {
         Supplier<T> supplier = () -> factory.apply(properties.setId(key));
+        //?} else {
+        /*Supplier<T> supplier = () -> factory.apply(properties);
+        *///?}
         return register.register(key.location().getPath(), supplier);
     }
 
