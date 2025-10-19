@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    {
+      "item": "ccsensory:testitem"
+    },
+    {
+      "item": "ccsensory:testitem"
+    },
+    {
+      "item": "ccsensory:testitem"
+    },
+    {
+      "item": "ccsensory:testitem"
+    },
+    {
+      "item": "ccsensory:testitem"
+    },
+    {
+      "item": "ccsensory:testitem"
+    },
+    {
+      "item": "ccsensory:testitem"
+    },
+    {
+      "item": "ccsensory:testitem"
+    },
+    {
+      "item": "ccsensory:testitem"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "ccsensory:testblock"
+  }
+}

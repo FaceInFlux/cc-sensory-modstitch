@@ -1,4 +1,4 @@
-//? if fabric && 1.21.8 {
+//? if fabric {
 package io.github.faceinflux.ccsensory.loaders.fabric.datagen;
 
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
@@ -11,8 +11,8 @@ public class ModDataGenerator implements DataGeneratorEntrypoint {
         FabricDataGenerator.Pack pack = generator.createPack();
 
         pack.addProvider(ModRecipeGenerator::new);
-        pack.addProvider(ModModelGenerator::new);
-        pack.addProvider(ModBlockLootTableGenerator::new);
+//        pack.addProvider(ModModelGenerator::new);
+//        pack.addProvider(ModBlockLootTableGenerator::new);
     }
 }
 //?}
