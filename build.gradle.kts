@@ -53,7 +53,21 @@ modstitch {
 
         // Configure loom like normal in this block.
         configureLoom {
+            runs {
+                if (modstitch.isLoom && minecraft == "1.21.8") {
+                    create("datagen") {
+                        client()
+                        name = "Datagen"
 
+                        vmArg("-Dfabric-api.datagen=true")
+                        vmArg("-Dfabric-api.datagen.output-dir=" + project.rootDir.toPath()
+                            .resolve("src/main/generated").toString()
+                        )
+
+                        vmArg("-Dfabric-api.datagen.modid=ccsensory")
+                    }
+                }
+            }
         }
     }
 
@@ -92,6 +106,14 @@ stonecutter {
         "forge" to constraint.equals("forge"),
         "vanilla" to constraint.equals("vanilla")
     )
+}
+
+sourceSets {
+    main {
+        resources {
+            srcDirs("src/main/generated", "src/main/resources")
+        }
+    }
 }
 
 // All dependencies should be specified through modstitch's proxy configuration.

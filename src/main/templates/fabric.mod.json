@@ -6,6 +6,9 @@
   "description": "${mod_description}",
   "environment": "*",
   "entrypoints": {
+    "fabric-datagen": [
+      "io.github.faceinflux.ccsensory.loaders.fabric.datagen.ModDataGenerator"
+    ],
     "main": [
       "io.github.faceinflux.ccsensory.loaders.fabric.FabricEntrypoint"
     ]
