@@ -8,6 +8,18 @@ stonecutter registerChiseled tasks.register("chiseledBuild", stonecutter.chisele
     ofTask("build")
 }
 
+// Feels like this is very much not where I'm meant to put this but...
+tasks.register("datagenAll") {
+    group = "project"
+
+    doLast {
+        exec {
+            workingDir = project.rootDir
+            executable = "./datagenAll.sh"
+        }
+    }
+}
+
 allprojects {
     repositories {
         mavenCentral()
