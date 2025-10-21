@@ -1,7 +1,7 @@
 //? if fabric {
 package io.github.faceinflux.ccsensory.loaders.fabric.datagen;
 
-import io.github.faceinflux.ccsensory.content.items.ModBlocks;
+import io.github.faceinflux.ccsensory.content.blocks.ModBlocks;
 import io.github.faceinflux.ccsensory.content.items.ModItems;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;

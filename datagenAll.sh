@@ -12,7 +12,9 @@ checkStatus() {
 }
 
 reset() {
+  status=$?
   ./gradlew "Reset active"
+  echo "Exited with code $status"
 }
 trap reset EXIT
 

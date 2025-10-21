@@ -2,7 +2,7 @@
 package io.github.faceinflux.ccsensory.loaders.fabric.registries;
 
 import io.github.faceinflux.ccsensory.CCSensory;
-import io.github.faceinflux.ccsensory.content.items.ModBlocks;
+import io.github.faceinflux.ccsensory.content.blocks.ModBlocks;
 import io.github.faceinflux.ccsensory.content.items.ModItems;
 import io.github.faceinflux.ccsensory.util.RegistryEntry;
 import net.minecraft.core.Registry;

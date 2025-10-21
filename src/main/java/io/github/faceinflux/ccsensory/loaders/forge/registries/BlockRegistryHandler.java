@@ -2,7 +2,7 @@
 /*package io.github.faceinflux.ccsensory.loaders.forge.registries;
 
 import io.github.faceinflux.ccsensory.CCSensory;
-import io.github.faceinflux.ccsensory.content.items.ModBlocks;
+import io.github.faceinflux.ccsensory.content.blocks.ModBlocks;
 import io.github.faceinflux.ccsensory.util.RegistryEntry;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.eventbus.api.IEventBus;

@@ -1,5 +1,6 @@
-package io.github.faceinflux.ccsensory.content.items;
+package io.github.faceinflux.ccsensory.content.blocks;
 
+import io.github.faceinflux.ccsensory.content.items.ModItems;
 import io.github.faceinflux.ccsensory.util.Register;
 import io.github.faceinflux.ccsensory.util.RegistryEntry;
 import net.minecraft.core.registries.Registries;
