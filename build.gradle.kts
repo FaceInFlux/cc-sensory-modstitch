@@ -8,6 +8,13 @@ fun prop(name: String, consumer: (prop: String) -> Unit) {
 }
 
 val minecraft = property("deps.minecraft") as String;
+val packFormat = when (property("deps.minecraft")) {
+    "1.20.1" -> 15
+    "1.21.1" -> 48
+    "1.21.7" -> 81
+    "1.21.8" -> 81
+    else -> throw IllegalArgumentException("Please store the resource pack version for ${property("deps.minecraft")} in build.gradle.kts! https://minecraft.wiki/w/Pack_format")
+}
 
 modstitch {
     minecraftVersion = minecraft
@@ -35,13 +42,7 @@ modstitch {
             // You can put any other replacement properties/metadata here that
             // modstitch doesn't initially support. Some examples below.
             put("mod_issue_tracker", "https://github.com/FaceInFlux/cc-sensory/issues")
-            put("pack_format", when (property("deps.minecraft")) {
-                "1.20.1" -> 15
-                "1.21.1" -> 48
-                "1.21.7" -> 81
-                "1.21.8" -> 81
-                else -> throw IllegalArgumentException("Please store the resource pack version for ${property("deps.minecraft")} in build.gradle.kts! https://minecraft.wiki/w/Pack_format")
-            }.toString())
+            put("pack_format", packFormat.toString())
         }
     }
 
@@ -53,7 +54,21 @@ modstitch {
 
         // Configure loom like normal in this block.
         configureLoom {
+            runs {
+                if (modstitch.isLoom) {
+                    create("datagen") {
+                        client()
+                        name = "Datagen"
 
+                        vmArg("-Dfabric-api.datagen=true")
+                        vmArg("-Dfabric-api.datagen.output-dir=" + project.rootDir.toPath()
+                            .resolve("src/main/generated/").resolve(packFormat.toString()).toString()
+                        )
+
+                        vmArg("-Dfabric-api.datagen.modid=ccsensory")
+                    }
+                }
+            }
         }
     }
 
@@ -92,6 +107,14 @@ stonecutter {
         "forge" to constraint.equals("forge"),
         "vanilla" to constraint.equals("vanilla")
     )
+}
+
+sourceSets {
+    main {
+        resources {
+            srcDirs("src/main/generated/$packFormat", "src/main/resources")
+        }
+    }
 }
 
 // All dependencies should be specified through modstitch's proxy configuration.
