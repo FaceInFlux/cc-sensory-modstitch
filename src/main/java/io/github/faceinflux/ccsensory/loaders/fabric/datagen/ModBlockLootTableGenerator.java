@@ -1,4 +1,4 @@
-//? if fabric && 1.21.8 {
+//? if fabric {
 package io.github.faceinflux.ccsensory.loaders.fabric.datagen;
 
 import io.github.faceinflux.ccsensory.content.items.ModBlocks;
@@ -22,8 +22,8 @@ import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
 import java.util.concurrent.CompletableFuture;
 
 public class ModBlockLootTableGenerator extends FabricBlockLootTableProvider {
-    protected ModBlockLootTableGenerator(FabricDataOutput dataOutput, CompletableFuture<HolderLookup.Provider> registryLookup) {
-        super(dataOutput, registryLookup);
+    protected ModBlockLootTableGenerator(FabricDataOutput dataOutput /*? if >=1.21.0 {*/, CompletableFuture<HolderLookup.Provider> registryLookup /*?}*/) {
+        super(dataOutput /*? if >=1.21.0 {*/, registryLookup /*?}*/);
     }
 
     @Override
