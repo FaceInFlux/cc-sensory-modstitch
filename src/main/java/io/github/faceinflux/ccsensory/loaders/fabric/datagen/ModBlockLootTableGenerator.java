@@ -27,8 +27,6 @@ public class ModBlockLootTableGenerator extends FabricBlockLootTableProvider {
     }
 
     @Override
-    public void generate() {
-        dropSelf(ModBlocks.testBlock.get());
-    }
+    public void generate() {}
 }
 //?}

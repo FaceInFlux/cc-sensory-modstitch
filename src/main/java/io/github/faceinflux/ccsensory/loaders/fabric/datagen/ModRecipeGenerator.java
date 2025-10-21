@@ -48,17 +48,7 @@ public class ModRecipeGenerator extends FabricRecipeProvider {
     // This is really cursed but I feel like it's about as clean as I can be using Stonecutter
     private void commonBuildRecipes(
             /*? if <1.21.0 {*//*Consumer<FinishedRecipe> *//*?} else {*/ RecipeOutput /*?}*/ exporter
-            /*? if >=1.21.2 {*/,RecipeProvider provider /*?}*/) {
-        //? if <1.21.2 {
-        /*ShapelessRecipeBuilder.
-        *///?} else
-        provider.
-                shapeless(RecipeCategory.BUILDING_BLOCKS, ModBlocks.testBlock.get().asItem())
-                .requires(ModItems.testItem.get(), 9)
-                // Recipe book unlock. This is required to prevent crashing I think
-                .unlockedBy("has_test_item", /*? if >=1.21.2 {*/provider./*?}*/has(ModItems.testItem.get()))
-                .save(exporter); // Equivalent to offerTo
-    }
+            /*? if >=1.21.2 {*/,RecipeProvider provider /*?}*/) {}
 
 
     @Override

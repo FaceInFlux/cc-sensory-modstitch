@@ -27,9 +27,4 @@ public class ModItems {
         *///?}
         return register.register(key.location().getPath(), supplier);
     }
-
-    public static final RegistryEntry<Item, Item> testItem = registerItem(
-            itemKey("testitem"),
-            Item::new,
-            new Item.Properties());
 }

@@ -23,13 +23,9 @@ public class ModModelGenerator extends FabricModelProvider {
     }
 
     @Override
-    public void generateBlockStateModels(BlockModelGenerators generator) {
-        generator.createTrivialCube(ModBlocks.testBlock.get()); // CUBE_ALL
-    }
+    public void generateBlockStateModels(BlockModelGenerators generator) {}
 
     @Override
-    public void generateItemModels(ItemModelGenerators generator) {
-        generator.generateFlatItem(ModItems.testItem.get(), ModelTemplates.FLAT_ITEM);
-    }
+    public void generateItemModels(ItemModelGenerators generator) {}
 }
 //?}

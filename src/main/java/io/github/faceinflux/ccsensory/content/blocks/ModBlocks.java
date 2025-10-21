@@ -60,10 +60,4 @@ public class ModBlocks {
                 *///?}
         );
     }
-
-    public static final RegistryEntry<Block, Block> testBlock = registerBlock(
-            blockKey("testblock"),
-            Block::new,
-            BlockBehaviour.Properties.of()
-    );
 }
