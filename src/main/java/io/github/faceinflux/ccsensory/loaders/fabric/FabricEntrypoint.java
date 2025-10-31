@@ -3,6 +3,7 @@ package io.github.faceinflux.ccsensory.loaders.fabric;
 
 import io.github.faceinflux.ccsensory.CCSensory;
 import com.mojang.logging.LogUtils;
+import io.github.faceinflux.ccsensory.loaders.fabric.registries.BlockEntityRegistryHandler;
 import io.github.faceinflux.ccsensory.loaders.fabric.registries.BlockRegistryHandler;
 import io.github.faceinflux.ccsensory.loaders.fabric.registries.ItemRegistryHandler;
 import net.fabricmc.api.ModInitializer;
@@ -19,6 +20,7 @@ public class FabricEntrypoint implements ModInitializer {
         // Note I think blocks MUST be registered before items for BlockItems to be registered
         BlockRegistryHandler.registerBlocks();
         ItemRegistryHandler.registerItems();
+        BlockEntityRegistryHandler.registerBlockEntities();
     }
 }
 //?}

@@ -3,6 +3,7 @@
 
 import io.github.faceinflux.ccsensory.CCSensory;
 import com.mojang.logging.LogUtils;
+import io.github.faceinflux.ccsensory.loaders.forge.registries.BlockEntityRegistryHandler;
 import io.github.faceinflux.ccsensory.loaders.forge.registries.BlockRegistryHandler;
 import io.github.faceinflux.ccsensory.loaders.forge.registries.ItemRegistryHandler;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -20,8 +21,9 @@ public class ForgeEntrypoint {
         LOGGER.info("Hello from ForgeEntrypoint!");
         CCSensory.initialize();
 
-        BlockRegistryHandler.registerItems(eventBus);
+        BlockRegistryHandler.registerBlocks(eventBus);
         ItemRegistryHandler.registerItems(eventBus);
+        BlockEntityRegistryHandler.registerBlockEntities(eventBus);
     }
 }
 *///?}

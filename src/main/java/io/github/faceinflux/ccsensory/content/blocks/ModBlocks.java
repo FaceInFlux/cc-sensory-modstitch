@@ -2,7 +2,7 @@ package io.github.faceinflux.ccsensory.content.blocks;
 
 import io.github.faceinflux.ccsensory.content.items.ModItems;
 import io.github.faceinflux.ccsensory.util.Register;
-import io.github.faceinflux.ccsensory.util.RegistryEntry;
+import io.github.faceinflux.ccsensory.util.SimpleRegistryEntry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.BlockItem;
@@ -20,7 +20,7 @@ public class ModBlocks {
         return Register.makeResourceKey(Registries.BLOCK, name);
     }
 
-    public static <T extends Block> RegistryEntry<Block, T> registerBlock(
+    public static <T extends Block> SimpleRegistryEntry<Block, T> registerBlock(
             ResourceKey<Block> key,
             Function<BlockBehaviour.Properties, T> factory,
             BlockBehaviour.Properties properties,
@@ -31,7 +31,8 @@ public class ModBlocks {
         //?} else {
         /*Supplier<T> supplier = () -> factory.apply(properties);
          *///?}
-        RegistryEntry<Block, T> entry = register.register(key.location().getPath(), supplier);
+        SimpleRegistryEntry<Block, T> entry =
+                (SimpleRegistryEntry<Block, T>) register.register(key.location().getPath(), supplier);
 
         if (makeBlockItem) {
             registerBlockItem(entry);
@@ -40,7 +41,7 @@ public class ModBlocks {
         return entry;
     }
 
-    public static <T extends Block> RegistryEntry<Block, T> registerBlock(
+    public static <T extends Block> SimpleRegistryEntry<Block, T> registerBlock(
             ResourceKey<Block> key,
             Function<BlockBehaviour.Properties, T> factory,
             BlockBehaviour.Properties properties
@@ -48,7 +49,7 @@ public class ModBlocks {
         return registerBlock(key, factory, properties, true);
     }
 
-    public static RegistryEntry<Item, BlockItem> registerBlockItem(RegistryEntry<Block, ?> block) {
+    public static SimpleRegistryEntry<Item, BlockItem> registerBlockItem(SimpleRegistryEntry<Block, ?> block) {
         ResourceKey<Item> key = ModItems.itemKey(block.id);
         return ModItems.registerItem(
                 key,
@@ -60,4 +61,10 @@ public class ModBlocks {
                 *///?}
         );
     }
+
+    public static final SimpleRegistryEntry<Block, LidarSensorBlock> LIDAR_SENSOR = registerBlock(
+            blockKey("lidar_sensor"),
+            LidarSensorBlock::new,
+            BlockBehaviour.Properties.of()
+    );
 }

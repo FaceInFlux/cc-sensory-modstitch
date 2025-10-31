@@ -1,7 +1,7 @@
 package io.github.faceinflux.ccsensory.content.items;
 
 import io.github.faceinflux.ccsensory.util.Register;
-import io.github.faceinflux.ccsensory.util.RegistryEntry;
+import io.github.faceinflux.ccsensory.util.SimpleRegistryEntry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.Item;
@@ -16,7 +16,7 @@ public class ModItems {
         return Register.makeResourceKey(Registries.ITEM, name);
     }
 
-    public static <T extends Item> RegistryEntry<Item, T> registerItem(
+    public static <T extends Item> SimpleRegistryEntry<Item, T> registerItem(
             ResourceKey<Item> key,
             Function<Item.Properties, T> factory,
             Item.Properties properties) {
@@ -25,6 +25,6 @@ public class ModItems {
         //?} else {
         /*Supplier<T> supplier = () -> factory.apply(properties);
         *///?}
-        return register.register(key.location().getPath(), supplier);
+        return (SimpleRegistryEntry<Item, T>) register.register(key.location().getPath(), supplier);
     }
 }

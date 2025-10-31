@@ -4,6 +4,7 @@
 import io.github.faceinflux.ccsensory.CCSensory;
 import io.github.faceinflux.ccsensory.content.items.ModItems;
 import io.github.faceinflux.ccsensory.util.RegistryEntry;
+import io.github.faceinflux.ccsensory.util.SimpleRegistryEntry;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
@@ -20,7 +21,7 @@ public class ItemRegistryHandler {
         for (RegistryEntry<Item, ?> entry : ModItems.register.values()) {
             CCSensory.LOGGER.info("Registering item {}", entry.id);
             // This is really cursed but I'm struggling with generics ;-;
-            RegistryEntry<Item, T> castedEntry = (RegistryEntry<Item, T>) entry;
+            SimpleRegistryEntry<Item, T> castedEntry = (SimpleRegistryEntry<Item, T>) entry;
             castedEntry.returnSupplier = ITEMS.register(entry.id,
                     castedEntry.creationSupplier);
 

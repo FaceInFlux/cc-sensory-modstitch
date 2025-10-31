@@ -117,6 +117,16 @@ sourceSets {
     }
 }
 
+repositories {
+    // CC: Tweaked
+    maven {
+        url = uri("https://maven.squiddev.cc")
+        content {
+            includeGroup("cc.tweaked")
+        }
+    }
+}
+
 // All dependencies should be specified through modstitch's proxy configuration.
 // Wondering where the "repositories" block is? Go to "stonecutter.gradle.kts"
 // If you want to create proxy configurations for more source sets, such as client source sets,
@@ -127,4 +137,5 @@ dependencies {
     }
 
     // Anything else in the dependencies block will be used for all platforms.
+    modstitchCompileOnly("cc.tweaked:cc-tweaked-${minecraft}-common-api:1.116.1")
 }
