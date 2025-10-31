@@ -60,20 +60,6 @@ public class LidarSensorBlockEntity extends BlockEntity {
     }
     *///?}
 
-    private <T> T get(Optional<T> optional) {
-        if (optional.isPresent()) {
-            return optional.get();
-        } else {
-            // This branch should never be reached, even if MC does a silly and wacky thing, since
-            // we should be checking this.
-            throw new RuntimeException("Tried to get nonexistent NBT data.");
-        }
-    }
-
-    private <T> T get(T object) {
-        return object;
-    }
-
     private <T> T getOrDefault(
             /*? if <1.21.7 {*/ /*CompoundTag *//*?} else {*/ ValueInput /*?}*/ input,
             Function<
