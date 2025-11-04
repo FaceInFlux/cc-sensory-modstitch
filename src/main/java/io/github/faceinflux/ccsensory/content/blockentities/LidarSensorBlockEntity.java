@@ -4,6 +4,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import io.github.faceinflux.ccsensory.CCSensory;
 import io.github.faceinflux.ccsensory.util.blockentities.MultiVersionBlockEntity;
 import io.github.faceinflux.ccsensory.util.nbt.NBTDataEntry;
 import net.minecraft.core.BlockPos;
@@ -18,11 +19,11 @@ import net.minecraft.world.level.storage.ValueOutput;
 
 public class LidarSensorBlockEntity extends MultiVersionBlockEntity {
     /** The tick at which the cooldown will end */
-    private int cooldownTick;
+    private Long cooldownTick;
     /** Get the tick at which the cooldown will end */
-    public int getCooldownTick() {return cooldownTick;} // I miss C# properties TwT
+    public Long getCooldownTick() {return cooldownTick;} // I miss C# properties TwT
     /** Set the tick at which the cooldown will end and mark the chunk dirty */
-    public void setCooldownTick(int value) {
+    public void setCooldownTick(Long value) {
         cooldownTick = value;
         this.setChanged();
     }
@@ -33,10 +34,11 @@ public class LidarSensorBlockEntity extends MultiVersionBlockEntity {
         entries.put("cooldownTick", new NBTDataEntry<>(
                 () -> cooldownTick,
                 (value) -> {
-                    cooldownTick = value;
+                    this.cooldownTick = (Long) value;
+                    CCSensory.LOGGER.info("Bweep bwomp!!!");
                     return null;
                 },
-                0
+                (long) 0L
         ));
     }
 }

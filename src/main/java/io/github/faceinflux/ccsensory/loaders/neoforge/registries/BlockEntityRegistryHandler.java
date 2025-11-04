@@ -28,7 +28,7 @@ public class BlockEntityRegistryHandler {
             castedEntry.returnSupplier = BLOCK_ENTITY_TYPES.register(
                     entry.id,
                     //? if >=1.21.7 {
-                    /^() -> new BlockEntityType<T>(
+                    () -> new BlockEntityType<T>(
                             (pos, state) ->
                                     (T) castedEntry.factory.create(pos, state),
                             false,
@@ -36,14 +36,14 @@ public class BlockEntityRegistryHandler {
                                     .map(RegistryEntry::get)
                                     .toArray(Block[]::new)
                     )
-                    ^///?} else {
-                    () -> BlockEntityType.Builder.of(
+                    //?} else {
+                    /^() -> BlockEntityType.Builder.of(
                             (pos, state) -> (T) castedEntry.factory.create(pos, state),
                             Arrays.stream(castedEntry.blocks)
                                     .map(RegistryEntry::get)
                                     .toArray(Block[]::new)
                     ).build(null)
-                    //?}
+                    ^///?}
             );
 
             ModBlockEntityTypes.register.replace(entry.id, castedEntry);

@@ -1,5 +1,6 @@
 package io.github.faceinflux.ccsensory.util.blockentities;
 
+import io.github.faceinflux.ccsensory.CCSensory;
 import io.github.faceinflux.ccsensory.util.nbt.*;
 import net.minecraft.core.BlockPos;
 
@@ -75,6 +76,7 @@ public abstract class MultiVersionBlockEntity extends BlockEntity {
         for (Map.Entry<String, NBTDataEntry<?>> hashPair : entries.entrySet()) {
             loadEntry(input, hashPair.getKey(), hashPair.getValue());
         }
+        CCSensory.LOGGER.info("abcdefg");
     }
 
     /** Load a singular entry. This method exists for the purpose of making the generic more
@@ -110,6 +112,14 @@ public abstract class MultiVersionBlockEntity extends BlockEntity {
 
         BiFunction<String, T, Void> outputSaveFunction = output.getFunction(clazz);
 
-        outputSaveFunction.apply(id, entry.getter().get());
+        T saveValue = entry.getter().get();
+
+        // TODO: Investigate; I don't think loadAdditional is getting called when it should
+        if (saveValue == null) {
+            saveValue = entry.defaultValue();
+            entry.setter().apply(saveValue);
+        }
+
+        outputSaveFunction.apply(id, saveValue);
     }
 }

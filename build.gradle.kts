@@ -1,3 +1,5 @@
+import org.gradle.kotlin.dsl.accessors.runtime.addDependencyTo
+
 plugins {
     id("dev.isxander.modstitch.base") version "0.7.1-unstable"
 }
@@ -132,10 +134,21 @@ repositories {
 // If you want to create proxy configurations for more source sets, such as client source sets,
 // use the modstitch.createProxyConfigurations(sourceSets["client"]) function.
 dependencies {
+    val ccTweaked = "1.116.1"
+
     modstitch.loom {
         modstitchModImplementation("net.fabricmc.fabric-api:fabric-api:${findProperty("fabricApiVersion")}")
+//        modstitchRuntimeOnly("cc.tweaked:cc-tweaked-${minecraft}-fabric:${ccTweaked}")
+        modstitchModCompileOnly("cc.tweaked:cc-tweaked-${minecraft}-fabric-api:${ccTweaked}")
+        modstitchModRuntimeOnly("cc.tweaked:cc-tweaked-${minecraft}-fabric:${ccTweaked}")
+    }
+
+    modstitch.moddevgradle {
+        modstitchModCompileOnly("cc.tweaked:cc-tweaked-${minecraft}-forge-api:${ccTweaked}")
+        modstitchModRuntimeOnly("cc.tweaked:cc-tweaked-${minecraft}-forge:${ccTweaked}")
     }
 
     // Anything else in the dependencies block will be used for all platforms.
-    modstitchCompileOnly("cc.tweaked:cc-tweaked-${minecraft}-common-api:1.116.1")
+    modstitchModCompileOnly("cc.tweaked:cc-tweaked-${minecraft}-common-api:${ccTweaked}")
+    modstitchModCompileOnly("cc.tweaked:cc-tweaked-${minecraft}-common:${ccTweaked}")
 }
