@@ -1,12 +1,10 @@
 package io.github.faceinflux.ccsensory.content.peripherals;
 
 import dan200.computercraft.api.ComputerCraftAPI;
-import dan200.computercraft.api.lua.LuaFunction;
-import dan200.computercraft.api.lua.ObjectLuaTable;
+import dan200.computercraft.api.lua.*;
 import dan200.computercraft.api.peripheral.GenericPeripheral;
 import io.github.faceinflux.ccsensory.CCSensory;
 import io.github.faceinflux.ccsensory.content.blockentities.LidarSensorBlockEntity;
-import io.github.faceinflux.ccsensory.content.blocks.ModBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;
@@ -16,7 +14,6 @@ import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.AmethystBlock;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.*;
@@ -29,10 +26,11 @@ import java.util.function.Predicate;
 
 public class LidarSensorPeripheral implements GenericPeripheral {
     /** The resolution of the scan in scans per degree */
-    private static final float RESOLUTION = 1f;
+    private static final float RESOLUTION = 0.75f;
     private static final double RANGE = 30;
     /** The offset when raycasting for blocks to prevent self collision */
     private static final double BLOCK_START_OFFSET = 0.91;
+    private static final double ENTITY_CAST_INFLATION = 0.5;
 
     // just in case
     private static boolean registered = false;
@@ -207,7 +205,7 @@ public class LidarSensorPeripheral implements GenericPeripheral {
         double d0 = Double.MAX_VALUE;
         Entity entity = null;
         Vec3 vec3 = null;
-        AABB rayBox = new AABB(rayStart, rayEnd);
+        AABB rayBox = new AABB(rayStart, rayEnd).inflate(ENTITY_CAST_INFLATION);
 
         for(Entity entity1 : level.getEntities(sourceEntity, rayBox, filter)) {
             AABB aabb = entity1.getBoundingBox().inflate((double)entity1.getPickRadius());
