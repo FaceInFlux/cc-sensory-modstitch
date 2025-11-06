@@ -15,17 +15,17 @@ import io.github.faceinflux.ccsensory.util.nbt.NBTDataEntry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.*;
 //? if >=1.21.7 {
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
-import net.minecraft.world.phys.*;
+import net.minecraft.world.entity.EntitySpawnReason;
 //?} else {
 /*import net.minecraft.nbt.CompoundTag;
 *///?}
@@ -93,7 +93,9 @@ public class LidarSensorBlockEntity extends MultiVersionBlockEntity {
                 break;
             }
 
-            castDirections.add(e.queuedCastDirections.removeFirst());
+            // The removeFirst function doesn't exist in some versions
+            //noinspection SequencedCollectionMethodCanBeUsed
+            castDirections.add(e.queuedCastDirections.remove(0));
         }
 
         ArrayList<Tuple<BlockPos, BlockState>> blocks = new ArrayList<>();
