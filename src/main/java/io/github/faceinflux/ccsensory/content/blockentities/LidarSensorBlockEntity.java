@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 import dan200.computercraft.api.lua.ObjectLuaTable;
 import io.github.faceinflux.ccsensory.CCSensory;
@@ -19,12 +17,8 @@ import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 //? if >=1.21.7 {
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.*;
 //?} else {
 /*import net.minecraft.nbt.CompoundTag;
@@ -97,7 +91,7 @@ public class LidarSensorBlockEntity extends MultiVersionBlockEntity {
         }
 
         ArrayList<Tuple<BlockPos, BlockState>> blocks = new ArrayList<>();
-        ArrayList<Entity> entities = new ArrayList<>();
+        ArrayList<Entity> entities;
 
         Vec3 blockCenter = Vec3.atCenterOf(e.getBlockPos());
 
@@ -113,6 +107,15 @@ public class LidarSensorBlockEntity extends MultiVersionBlockEntity {
         tempEntity.setInvulnerable(true);
         tempEntity.setNoGravity(true);
         level.addFreshEntity(tempEntity);
+
+        Vec3 rangeVec = new Vec3(1,1,1).scale(RANGE);
+        ArrayList<Entity> entityQueue = (ArrayList<Entity>) level.getEntities(tempEntity, new AABB(
+                pos.getCenter().subtract(rangeVec),
+                pos.getCenter().add(rangeVec)
+        ));
+
+        entityQueue.removeIf(entity -> entity.distanceTo(tempEntity) > 30); // why are lists so fancy
+
         for (Vec3 direction : castDirections) {
             Vec3 castStart = blockCenter.add(direction.scale(BLOCK_START_OFFSET));
             Vec3 castEnd = blockCenter.add(direction.scale(RANGE));
@@ -131,17 +134,19 @@ public class LidarSensorBlockEntity extends MultiVersionBlockEntity {
                     ? Double.MAX_VALUE
                     : blockRaycastResult.getLocation().distanceToSqr(blockCenter);
 
-            EntityHitResult entityRaycastResult = entityRaycast(
-                    tempEntity,
-                    e.getLevel(),
-                    blockCenter,
-                    castEnd,
-                    entity -> entity != tempEntity
-            );
-
-            double entityDist = entityRaycastResult == null
-                    ? Double.MAX_VALUE
-                    : entityRaycastResult.getLocation().distanceToSqr(blockCenter);
+            double entityDist = Double.MAX_VALUE;
+            Entity entity = null;
+            for (Entity o : entityQueue) {
+                Vec3 entityDirection = o.position().subtract(blockCenter).normalize();
+                if (entityDirection.dot(direction) > 0.98) {
+                    double oDist = o.distanceToSqr(blockCenter);
+                    if (oDist < entityDist && oDist < blockDist) {
+                        entity = o;
+                        entityDist = oDist;
+                    }
+                    entityQueue.remove(o); // Don't re-check this entity
+                }
+            }
 
             if (blockRaycastResult.getType() == HitResult.Type.BLOCK && blockDist < entityDist) {
                 BlockPos blockPos = blockRaycastResult.getBlockPos();
@@ -167,8 +172,8 @@ public class LidarSensorBlockEntity extends MultiVersionBlockEntity {
 //                    e.getLevel().setBlockAndUpdate(blockPos, Blocks.AMETHYST_BLOCK.defaultBlockState());
                 }
             } else if (entityRaycastResult != null && entityDist < blockDist) {
-                if (!entities.contains(entityRaycastResult.getEntity())) { // Prevent duplicates
-                    entities.add(entityRaycastResult.getEntity());
+                if (!entityQueue.contains(entityRaycastResult.getEntity())) { // Prevent duplicates
+                    entityQueue.add(entityRaycastResult.getEntity());
                 }
             }
         }
@@ -191,7 +196,7 @@ public class LidarSensorBlockEntity extends MultiVersionBlockEntity {
         }
 
         i = 1;
-        for (Entity entity : entities) {
+        for (Entity entity : entityQueue) {
             Vec3 entityPos = entity.getPosition(0);
             e.entityDataMap.put(i, new ObjectLuaTable(Map.of(
                     "name", entity.getName().toString(),
