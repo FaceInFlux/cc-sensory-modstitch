@@ -7,5 +7,4 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.ArrayList;
 
-public record LidarScanResult(ArrayList<Tuple<BlockPos, BlockState>> blocks, ArrayList<Entity> entities) {
-}
+public record LidarScanResult(ArrayList<Tuple<BlockPos, BlockState>> blocks, ArrayList<Entity> entities) { }
