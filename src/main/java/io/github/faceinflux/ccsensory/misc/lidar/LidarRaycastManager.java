@@ -21,7 +21,7 @@ public final class LidarRaycastManager {
     }
 
     public static int queueScan(LidarScanRequest data) {
-        int id = Integer.MIN_VALUE; // Overkill, but no harm in doing this I don't think
+        int id = 0;
         while (IDS.contains(id)) {id++;} // Iterate up until free id found.
 
         data.id = id;

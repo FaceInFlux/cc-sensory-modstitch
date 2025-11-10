@@ -42,66 +42,22 @@ public class LidarSensorPeripheral implements GenericPeripheral {
         return CCSensory.ID + ":lidar_sensor";
     }
 
-//    @LuaFunction(mainThread = true)
-//    public ObjectLuaTable getScanData(LidarSensorBlockEntity blockEntity) {
-//        return new ObjectLuaTable(Map.of(
-//                "status", blockEntity.status.ordinal(),
-//                "blocks", blockEntity.blockDataMap,
-//                "entities", blockEntity.entityDataMap
-//        ));
-//    }
-
-//    @LuaFunction(mainThread = true)
-//    public int getStatus(LidarSensorBlockEntity blockEntity) {
-//        return blockEntity.status.ordinal();
-//    }
-
-//    @LuaFunction(mainThread = true)
-//    public void startScan(LidarSensorBlockEntity blockEntity) {
-//        blockEntity.blockDataMap.clear();
-//        blockEntity.entityDataMap.clear();
-//        blockEntity.queuedCastDirections = castDirections();
-//        blockEntity.status = LidarSensorBlockEntity.STATUS.SCANNING;
-//    }
-//
-//    @LuaFunction(mainThread = true)
-//    public void stopScan(LidarSensorBlockEntity blockEntity) {
-//        blockEntity.queuedCastDirections = null;
-//        blockEntity.status = LidarSensorBlockEntity.STATUS.IDLE;
-//    }
-
-    @LuaFunction(mainThread = true)
+    @LuaFunction
     public MethodResult scan(LidarSensorBlockEntity blockEntity) {
-        assert blockEntity.getLevel() != null;
-        Level level = blockEntity.getLevel();
-        HashMap<BlockPos, BlockState> blocks = new HashMap<>();
-        ArrayList<EntityRaycastData> entities = new ArrayList<>();
-
-        // Brute force method to get blocks in sphere (don't murder me please)
-        for (int x = (int) -RANGE; x < RANGE; x++) {
-            for (int y = (int) -RANGE; y < RANGE; y++) {
-                for (int z = (int) -RANGE; z < RANGE; z++) {
-                    BlockPos pos = new BlockPos(x, y, z);
-                    if (pos.distSqr(blockEntity.getBlockPos()) <= (Math.pow(RANGE,2))) {
-                        blocks.put(pos, level.getBlockState(pos));
-                    }
-                }
-            }
+        if (!blockEntity.startGatheringRequestData(RANGE, castDirections())) {
+            return MethodResult.of(); // If requesting the data gathering failed
         }
 
-        for (Entity entity : level.getEntities(null, new AABB(-RANGE, -RANGE, -RANGE, RANGE, RANGE, RANGE))) {
-            if (entity.distanceToSqr(blockEntity.getBlockPos().getCenter()) <= (Math.pow(RANGE, 2))) {
-                entities.add(new EntityRaycastData(entity, entity.getBoundingBox(), entity.getPickRadius()));
-            }
-        }
-
-        int requestId = LidarRaycastManager.queueScan(new LidarScanRequest(blocks, entities, blockEntity.getBlockPos(), castDirections(), RANGE));
+        // Made a final array so it can be accessed inside the callback. The linter told me to do this :p
+        final Integer[] id = {null};
 
         return MethodResult.pullEvent(null, new ILuaCallback() {
             @Override
             public MethodResult resume(@Nullable Object[] args) throws LuaException {
-                if (LidarRaycastManager.isReady(requestId)) {
-                    LidarScanResult result = LidarRaycastManager.pullResult(requestId);
+                id[0] = id[0] == null ? blockEntity.getRequestID() : id[0];
+
+                if (id[0] != null && LidarRaycastManager.isReady(id[0])) {
+                    LidarScanResult result = LidarRaycastManager.pullResult(id[0]);
                     return MethodResult.of(generateLuaOutput(result));
                 } else {
                     return MethodResult.pullEvent(null, this);
