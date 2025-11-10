@@ -22,16 +22,10 @@ class LidarRaycastThread extends Thread {
     @Override
     public void run() {
         while (!this.isInterrupted()) {
-            LidarScanRequest request = LidarRaycastManager.dequeueRequest();
-
-            if (request != null) {
-                handleRequest(request);
-            } else {
-                try {
-                    wait();
-                } catch (InterruptedException e) {
-                    break;
-                }
+            try {
+                handleRequest(LidarRaycastManager.dequeueRequest());
+            } catch (InterruptedException e) {
+                break;
             }
         }
     }

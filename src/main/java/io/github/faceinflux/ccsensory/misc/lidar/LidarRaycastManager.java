@@ -20,17 +20,19 @@ public final class LidarRaycastManager {
         THREAD.start();
     }
 
-    public static synchronized int queueScan(LidarScanRequest data) {
+    public static int queueScan(LidarScanRequest data) {
         int id = Integer.MIN_VALUE; // Overkill, but no harm in doing this I don't think
-        while (!IDS.contains(id)) {id++;} // Iterate up until free id found.
+        while (IDS.contains(id)) {id++;} // Iterate up until free id found.
 
         data.id = id;
         IDS.add(id);
         REQUESTS.add(data);
 
-        THREAD.notify(); // Wake up the thread if it was waiting for smth to be queued
-
         return id;
+    }
+
+    public static LidarScanRequest dequeueRequest() throws InterruptedException {
+        return REQUESTS.takeFirst();
     }
 
     public static synchronized boolean isReady(int id) {
@@ -45,10 +47,6 @@ public final class LidarRaycastManager {
         LidarScanResult result = RESULTS.remove(id); // Removing
         IDS.remove(id);
         return result;
-    }
-
-    public static synchronized @Nullable LidarScanRequest dequeueRequest() {
-        return REQUESTS.pollFirst();
     }
 
     public static synchronized void pushResult(int id, LidarScanResult result) {
