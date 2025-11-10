@@ -11,21 +11,21 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class LidarScanRequest {
-    public static final int RANGE_DEFAULT = 30;
+    public static final double RANGE_DEFAULT = 30;
 
     public final HashMap<BlockPos, BlockState> blocks;
     // The thread _could_ grab the AABB from the Entity, but I think I wanna avoid the thread
     // touching the entity directly because concurrency be concurring
-    public final EntityRaycastData[] entities;
+    public final ArrayList<EntityRaycastData> entities;
     public final BlockPos lidarPos;
     public final ArrayList<Vec3> directions;
-    public final int range;
+    public final double range;
     public int id;
 
     public LidarScanRequest(
-            HashMap<BlockPos, BlockState> blocks, EntityRaycastData[] entities,
+            HashMap<BlockPos, BlockState> blocks, ArrayList<EntityRaycastData> entities,
             BlockPos lidarPos, ArrayList<Vec3> directions,
-            int range
+            double range
     ) {
         this.blocks = blocks;
         this.entities = entities;
@@ -35,7 +35,7 @@ public class LidarScanRequest {
     }
 
     public LidarScanRequest(
-            HashMap<BlockPos, BlockState> blocks, EntityRaycastData[] entities,
+            HashMap<BlockPos, BlockState> blocks, ArrayList<EntityRaycastData> entities,
             BlockPos lidarPos, ArrayList<Vec3> directions
     ) {
       this(blocks, entities, lidarPos, directions, RANGE_DEFAULT);

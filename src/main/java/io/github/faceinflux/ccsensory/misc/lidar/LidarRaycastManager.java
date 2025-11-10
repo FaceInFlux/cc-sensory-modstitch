@@ -10,7 +10,7 @@ import java.util.Queue;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 
-public class LidarRaycastManager {
+public final class LidarRaycastManager {
     private static final LinkedBlockingDeque<LidarScanRequest> REQUESTS = new LinkedBlockingDeque<>();
     private static final ArrayList<Integer> IDS = new ArrayList<>();
     private static final HashMap<Integer, LidarScanResult> RESULTS = new HashMap<>();

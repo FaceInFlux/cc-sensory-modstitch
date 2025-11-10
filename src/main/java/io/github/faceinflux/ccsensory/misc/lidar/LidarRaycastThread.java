@@ -92,7 +92,7 @@ class LidarRaycastThread extends Thread {
         for (EntityRaycastData data : request.entities) {
             AABB aabb = data.aabb().inflate(data.pickRadius());
             Entity e = data.entity();
-            if (aabb.distanceToSqr(request.lidarPos.getCenter()) > (request.range^2)) {
+            if (aabb.distanceToSqr(request.lidarPos.getCenter()) > (Math.pow(request.range,2))) {
                 continue; // Discard entities out of range; grabs in box & we want sphere
             }
 

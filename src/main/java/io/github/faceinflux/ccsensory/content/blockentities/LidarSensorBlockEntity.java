@@ -31,9 +31,10 @@ import net.minecraft.world.entity.EntitySpawnReason;
 *///?}
 
 public class LidarSensorBlockEntity extends MultiVersionBlockEntity {
+    // FIXME Constants are wack; put all these in reasonable location(s)
     /** The resolution of the scan in scans per degree */
     public static final float RESOLUTION = 0.75f;
-    private static final double RANGE = 30;
+    public static final double RANGE = 30;
     /** The offset when raycasting for blocks to prevent self collision */
     private static final double BLOCK_START_OFFSET = 0.91;
     public static final double ENTITY_CAST_INFLATION = 0.5;
