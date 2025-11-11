@@ -10,7 +10,5 @@ public class CCSensory {
 
     public static void initialize() {
         LOGGER.info("Hello from MyMod!");
-
-        LidarSensorPeripheral.register();
     }
 }

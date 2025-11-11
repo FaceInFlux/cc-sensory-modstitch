@@ -3,6 +3,7 @@ package io.github.faceinflux.ccsensory.content.peripherals;
 import dan200.computercraft.api.ComputerCraftAPI;
 import dan200.computercraft.api.lua.*;
 import dan200.computercraft.api.peripheral.GenericPeripheral;
+import dan200.computercraft.api.peripheral.IPeripheral;
 import io.github.faceinflux.ccsensory.CCSensory;
 import io.github.faceinflux.ccsensory.content.blockentities.LidarSensorBlockEntity;
 import io.github.faceinflux.ccsensory.misc.lidar.EntityRaycastData;
@@ -24,26 +25,29 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 import static io.github.faceinflux.ccsensory.content.blockentities.LidarSensorBlockEntity.*;
 
-public class LidarSensorPeripheral implements GenericPeripheral {
-    // just in case
-    private static boolean registered = false;
-    public static void register() {
-        if (!registered) {
-            ComputerCraftAPI.registerGenericSource(new LidarSensorPeripheral());
-            registered = true;
-        }
+public class LidarSensorPeripheral implements IPeripheral {
+    private final LidarSensorBlockEntity blockEntity;
+
+    public LidarSensorPeripheral(LidarSensorBlockEntity blockEntity) {
+        this.blockEntity = blockEntity;
     }
 
     @Override
-    public String id() {
+    public String getType() {
         return CCSensory.ID + ":lidar_sensor";
     }
 
+    @Override
+    public boolean equals(@Nullable IPeripheral other) {
+        return other instanceof LidarSensorPeripheral o && blockEntity == o.blockEntity;
+    }
+
     @LuaFunction
-    public MethodResult scan(LidarSensorBlockEntity blockEntity) {
+    public MethodResult scan() {
         if (!blockEntity.startGatheringRequestData(RANGE, castDirections())) {
             return MethodResult.of(); // If requesting the data gathering failed
         }
@@ -51,7 +55,7 @@ public class LidarSensorPeripheral implements GenericPeripheral {
         // Made a final array so it can be accessed inside the callback. The linter told me to do this :p
         final Integer[] id = {null};
 
-        return MethodResult.pullEvent(null, new ILuaCallback() {
+        ILuaCallback callbackLoop = new ILuaCallback() {
             @Override
             public MethodResult resume(@Nullable Object[] args) throws LuaException {
                 id[0] = id[0] == null ? blockEntity.getRequestID() : id[0];
@@ -63,7 +67,15 @@ public class LidarSensorPeripheral implements GenericPeripheral {
                     return MethodResult.pullEvent(null, this);
                 }
             }
-        });
+        };
+
+        Supplier<MethodResult> pull = () -> {
+            return MethodResult.pullEvent(null, callbackLoop);
+        };
+
+
+
+        return pull.get();
     }
 
     private ObjectLuaTable generateLuaOutput(LidarScanResult scanResult) {
@@ -123,4 +135,6 @@ public class LidarSensorPeripheral implements GenericPeripheral {
 
         return list;
     }
+
+
 }

@@ -6,6 +6,7 @@ import com.mojang.logging.LogUtils;
 import io.github.faceinflux.ccsensory.loaders.fabric.registries.BlockEntityRegistryHandler;
 import io.github.faceinflux.ccsensory.loaders.fabric.registries.BlockRegistryHandler;
 import io.github.faceinflux.ccsensory.loaders.fabric.registries.ItemRegistryHandler;
+import io.github.faceinflux.ccsensory.loaders.fabric.registries.PeripheralRegistryHandler;
 import net.fabricmc.api.ModInitializer;
 import org.slf4j.Logger;
 
@@ -21,6 +22,7 @@ public class FabricEntrypoint implements ModInitializer {
         BlockRegistryHandler.registerBlocks();
         ItemRegistryHandler.registerItems();
         BlockEntityRegistryHandler.registerBlockEntities();
+        PeripheralRegistryHandler.registerPeripherals();
     }
 }
 //?}
