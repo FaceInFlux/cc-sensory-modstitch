@@ -27,16 +27,6 @@ import org.jspecify.annotations.Nullable;
 
 public class LidarSensorBlockEntity extends MultiVersionBlockEntity {
     // FIXME Constants are wack; put all these in reasonable location(s)
-    /** The resolution of the scan in scans per degree */
-    public static final float RESOLUTION = 0.75f;
-    public static final double RANGE = 30;
-    /** The offset when raycasting for blocks to prevent self collision */
-    private static final double BLOCK_START_OFFSET = 0.91;
-    public static final double ENTITY_CAST_INFLATION = 0.5;
-    // For reference, TNT does like 1,000 in a tick
-    // NOTE: I'm doing both block & entity casts separately so this is really half the casts/tick
-    private static final int CASTS_PER_TICK = 500;
-    private static final long COOLDOWN_TIME = 10 * 20;
 
     /** The tick at which the cooldown will end */
     private Long cooldownTick = 0L;
@@ -67,12 +57,6 @@ public class LidarSensorBlockEntity extends MultiVersionBlockEntity {
     public Map<Integer, ObjectLuaTable> entityDataMap = new HashMap<>();
     private boolean onCooldown = false;
 
-    // REQUEST GENERATION
-    private boolean requestDataGatherRunning = false;
-    private Double requestRange;
-    private ArrayList<Vec3> requestDirections;
-    private Integer requestID;
-
     public LidarSensorBlockEntity(BlockPos blockPos, BlockState blockState) {
         super(ModBlockEntityTypes.LIDAR_SENSOR_BLOCK_ENTITY.get(), blockPos, blockState);
 
@@ -80,76 +64,14 @@ public class LidarSensorBlockEntity extends MultiVersionBlockEntity {
                 () -> cooldownTick,
                 (value) -> {
                     this.cooldownTick = (Long) value;
-                    CCSensory.LOGGER.info("Bweep bwomp!!!");
                     return null;
                 },
                 (long) 0L
         ));
     }
 
-    public synchronized boolean startGatheringRequestData(double range, ArrayList<Vec3> directions) {
-        if (onCooldown || requestDataGatherRunning) {
-            return false;
-        } else {
-            requestID = null;
-            requestRange = range;
-            requestDirections = directions;
-            requestDataGatherRunning = true;
-            return true;
-        }
-    }
-
-    public synchronized @Nullable Integer getRequestID() {
-        Integer id = requestID;
-        requestID = null;
-        return id;
-    }
-
-    private synchronized void resetRequestDataInput() {
-        requestDataGatherRunning = false;
-        requestRange = null;
-        requestDirections = null;
-    }
-
-    private void gatherRequestData() {
-        assert level != null;
-        HashMap<BlockPos, BlockState> blocks = new HashMap<>();
-        ArrayList<EntityRaycastData> entities = new ArrayList<>();
-
-        // Brute force method to get blocks in sphere (don't murder me please)
-        for (int x = (int) -requestRange; x < requestRange; x++) {
-            for (int y = (int) -requestRange; y < requestRange; y++) {
-                for (int z = (int) -requestRange; z < requestRange; z++) {
-                    BlockPos pos = getBlockPos().offset(new BlockPos(x, y, z));
-                    if (pos.distSqr(getBlockPos()) <= (Math.pow(requestRange,2))) {
-                        blocks.put(pos, level.getBlockState(pos));
-                    }
-                }
-            }
-        }
-
-        for (Entity entity : level.getEntities(
-                null, new AABB(-requestRange, -requestRange, -requestRange, requestRange, requestRange, requestRange).move(getBlockPos()))) {
-            if (entity.distanceToSqr(getBlockPos().getCenter()) <= (Math.pow(requestRange, 2))) {
-                entities.add(new EntityRaycastData(entity, entity.getBoundingBox(), entity.getPickRadius()));
-            }
-        }
-
-        requestID = LidarRaycastManager.queueScan(new LidarScanRequest(blocks, entities, getBlockPos(), requestDirections, requestRange));
-    }
-
     public static void tick(Level level, BlockPos pos, BlockState state, LidarSensorBlockEntity e) {
-        if (level.getGameTime() % 10 == 0) {
-            e.peripheral.update();
-        }
-
         e.onCooldown = e.getCooldownTick() > level.getGameTime();
-
-        if (e.requestDataGatherRunning) {
-            e.setCooldownTick(level.getGameTime() + COOLDOWN_TIME);
-            e.gatherRequestData();
-            e.resetRequestDataInput();
-        }
     }
 
     public IPeripheral peripheral() {

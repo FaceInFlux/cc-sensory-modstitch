@@ -5,7 +5,9 @@ import dan200.computercraft.api.peripheral.IComputerAccess;
 import dan200.computercraft.api.peripheral.IPeripheral;
 import io.github.faceinflux.ccsensory.CCSensory;
 import io.github.faceinflux.ccsensory.content.blockentities.LidarSensorBlockEntity;
+import io.github.faceinflux.ccsensory.misc.lidar.EntityRaycastData;
 import io.github.faceinflux.ccsensory.misc.lidar.LidarRaycastManager;
+import io.github.faceinflux.ccsensory.misc.lidar.LidarScanRequest;
 import io.github.faceinflux.ccsensory.misc.lidar.LidarScanResult;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Tuple;
@@ -21,14 +23,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import static io.github.faceinflux.ccsensory.content.blockentities.LidarSensorBlockEntity.*;
-
 public class LidarSensorPeripheral implements IPeripheral {
-    private static final String UPDATE_EVENT_NAME = "lidar_sensor_update";
+    /** The resolution of the scan in scans per degree */
+    public static final float RESOLUTION = 0.75f;
+    public static final double RANGE = 30;
+    private static final String READY_EVENT_NAME = "lidar_sensor_finished";
 
     private final LidarSensorBlockEntity blockEntity;
 
     private IComputerAccess activeComputer;
+    private LidarScanResult scanResult;
 
     public LidarSensorPeripheral(LidarSensorBlockEntity blockEntity) {
         this.blockEntity = blockEntity;
@@ -46,41 +50,71 @@ public class LidarSensorPeripheral implements IPeripheral {
 
     @LuaFunction
     public MethodResult scan(IComputerAccess computer, ILuaContext context) {
-        if (activeComputer != null || !blockEntity.startGatheringRequestData(RANGE, castDirections())) {
-            return MethodResult.of(); // If requesting the data gathering failed or another computer is waiting.
+        if (activeComputer != null) {
+            return MethodResult.of((Object) null); // If another computer is waiting.
         }
 
         activeComputer = computer;
 
-        // Made a final array so it can be accessed inside the callback. The linter told me to do this :p
-        ILuaCallback callbackLoop = getScanCallbackLoop();
+        try {
+            context.executeMainThreadTask(() -> gatherRequestData(RANGE));
 
-        return MethodResult.pullEvent(UPDATE_EVENT_NAME, callbackLoop);
+            return getScanCallbackLoop();
+        } catch (LuaException e) {
+            return MethodResult.of((Object) null);
+        }
     }
 
-    private @NotNull ILuaCallback getScanCallbackLoop() {
-        final Integer[] id = {null};
-
-        return new ILuaCallback() {
+    private @NotNull MethodResult getScanCallbackLoop() {
+        return MethodResult.pullEvent(READY_EVENT_NAME, new ILuaCallback() {
             @Override
             public MethodResult resume(@Nullable Object[] args) throws LuaException {
-                id[0] = id[0] == null ? blockEntity.getRequestID() : id[0];
-
-                if (id[0] != null && LidarRaycastManager.isReady(id[0])) {
-                    LidarScanResult result = LidarRaycastManager.pullResult(id[0]);
+                if (scanResult != null) {
+                    LidarScanResult result = scanResult;
                     activeComputer = null;
+                    scanResult = null;
                     return MethodResult.of(generateLuaOutput(result));
                 } else {
-                    return MethodResult.pullEvent(UPDATE_EVENT_NAME, this);
+                    return getScanCallbackLoop();
                 }
             }
-        };
+        });
     }
 
-    public synchronized void update() {
+    public synchronized void pushResult(LidarScanResult result) {
         if (activeComputer != null) {
-            activeComputer.queueEvent(UPDATE_EVENT_NAME);
+            this.scanResult = result;
+            activeComputer.queueEvent(READY_EVENT_NAME);
         }
+    }
+
+    private @Nullable Object @Nullable [] gatherRequestData(double requestRange) {
+        assert blockEntity.getLevel() != null;
+        HashMap<BlockPos, BlockState> blocks = new HashMap<>();
+        ArrayList<EntityRaycastData> entities = new ArrayList<>();
+
+        // Brute force method to get blocks in sphere (don't murder me please)
+        for (int x = (int) -requestRange; x < requestRange; x++) {
+            for (int y = (int) -requestRange; y < requestRange; y++) {
+                for (int z = (int) -requestRange; z < requestRange; z++) {
+                    BlockPos pos = blockEntity.getBlockPos().offset(new BlockPos(x, y, z));
+                    if (pos.distSqr(blockEntity.getBlockPos()) <= (Math.pow(requestRange,2))) {
+                        blocks.put(pos, blockEntity.getLevel().getBlockState(pos));
+                    }
+                }
+            }
+        }
+
+        for (Entity entity : blockEntity.getLevel().getEntities(
+                null, new AABB(-requestRange, -requestRange, -requestRange, requestRange, requestRange, requestRange).move(blockEntity.getBlockPos()))) {
+            if (entity.distanceToSqr(blockEntity.getBlockPos().getCenter()) <= (Math.pow(requestRange, 2))) {
+                entities.add(new EntityRaycastData(entity, entity.getBoundingBox(), entity.getPickRadius()));
+            }
+        }
+
+        LidarRaycastManager.queueScan(new LidarScanRequest(
+                blocks, entities, blockEntity.getBlockPos(), castDirections(), this, requestRange));
+        return null; // Apparently this is required for a LuaTask
     }
 
     private ObjectLuaTable generateLuaOutput(LidarScanResult scanResult) {

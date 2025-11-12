@@ -54,9 +54,10 @@ class LidarRaycastThread extends Thread {
             }
         }
 
-        LidarRaycastManager.pushResult(request.id, new LidarScanResult(
+        request.consumer.pushResult(new LidarScanResult(
                 new ArrayList<>(hitBlocks),
-                new ArrayList<>(hitEntities)));
+                new ArrayList<>(hitEntities)
+        ));
     }
 
     private @Nullable Tuple<BlockPos, BlockState> blockRaycast(LidarScanRequest request, Vec3 direction) {

@@ -1,5 +1,6 @@
 package io.github.faceinflux.ccsensory.misc.lidar;
 
+import io.github.faceinflux.ccsensory.content.peripherals.LidarSensorPeripheral;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;
@@ -20,24 +21,25 @@ public class LidarScanRequest {
     public final BlockPos lidarPos;
     public final ArrayList<Vec3> directions;
     public final double range;
-    public int id;
+    public final LidarSensorPeripheral consumer;
 
     public LidarScanRequest(
             HashMap<BlockPos, BlockState> blocks, ArrayList<EntityRaycastData> entities,
             BlockPos lidarPos, ArrayList<Vec3> directions,
-            double range
+            LidarSensorPeripheral consumer, double range
     ) {
         this.blocks = blocks;
         this.entities = entities;
         this.lidarPos = lidarPos;
         this.directions = directions;
         this.range = range;
+        this.consumer = consumer;
     }
 
     public LidarScanRequest(
             HashMap<BlockPos, BlockState> blocks, ArrayList<EntityRaycastData> entities,
-            BlockPos lidarPos, ArrayList<Vec3> directions
+            BlockPos lidarPos, ArrayList<Vec3> directions, LidarSensorPeripheral consumer
     ) {
-      this(blocks, entities, lidarPos, directions, RANGE_DEFAULT);
+      this(blocks, entities, lidarPos, directions, consumer, RANGE_DEFAULT);
     }
 }
