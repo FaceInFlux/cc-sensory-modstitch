@@ -34,7 +34,6 @@ class LidarRaycastThread extends Thread {
         HashSet<Tuple<BlockPos, BlockState>> hitBlocks = new HashSet<>();
         HashSet<Entity> hitEntities = new HashSet<>();
 
-        float marchDistance;
         for (Vec3 direction : request.directions) {
             Tuple<BlockPos, BlockState> block = blockRaycast(request, direction);
             EntityHitResult entity = entityRaycast(request, direction);
