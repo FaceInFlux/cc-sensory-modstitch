@@ -14,6 +14,7 @@ import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;
 //? if >=1.21.7 {
 //?}
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.*;
 import org.jetbrains.annotations.NotNull;
@@ -117,7 +118,6 @@ public class LidarSensorPeripheral implements IPeripheral {
     }
 
     private ObjectLuaTable generateLuaOutput(LidarScanResult scanResult) {
-        // FIXME: ID and name fields are currently wrong
         Map<Integer, ObjectLuaTable> blockDataMap = new HashMap<>();
         Map<Integer, ObjectLuaTable> entityDataMap = new HashMap<>();
 
@@ -131,7 +131,8 @@ public class LidarSensorPeripheral implements IPeripheral {
                             "y", blockPos.getY(),
                             "z", blockPos.getZ()
                     )),
-                    "id", block.getBlock().getName().getString()
+                    "key", block.getBlock().getDescriptionId(),
+                    "color", Integer.toHexString(block.getBlock().defaultMapColor().col)
             )));
             i++;
         }
@@ -140,7 +141,8 @@ public class LidarSensorPeripheral implements IPeripheral {
         for (Entity entity : scanResult.entities()) {
             Vec3 entityPos = entity.getPosition(0);
             entityDataMap.put(i, new ObjectLuaTable(Map.of(
-                    "name", entity.getName().toString(),
+                    "name", getEntityName(entity),
+                    "key", entity.getType().getDescriptionId(),
                     "relativePosition", new ObjectLuaTable(Map.of(
                             "x", entityPos.x,
                             "y", entityPos.y,
@@ -154,6 +156,16 @@ public class LidarSensorPeripheral implements IPeripheral {
                 "blocks", blockDataMap,
                 "entities", entityDataMap
         ));
+    }
+
+    private String getEntityName(Entity entity) {
+        if (entity.hasCustomName()) {
+            return entity.getCustomName().getString();
+        } else if (entity.getType() == EntityType.PLAYER) {
+            return entity.getName().getString();
+        } else {
+            return entity.getType().getDescriptionId();
+        }
     }
 
     private ArrayList<Vec3> castDirections() {
