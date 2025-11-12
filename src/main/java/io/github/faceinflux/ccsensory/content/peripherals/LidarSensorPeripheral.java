@@ -1,36 +1,34 @@
 package io.github.faceinflux.ccsensory.content.peripherals;
 
-import dan200.computercraft.api.ComputerCraftAPI;
 import dan200.computercraft.api.lua.*;
-import dan200.computercraft.api.peripheral.GenericPeripheral;
+import dan200.computercraft.api.peripheral.IComputerAccess;
 import dan200.computercraft.api.peripheral.IPeripheral;
 import io.github.faceinflux.ccsensory.CCSensory;
 import io.github.faceinflux.ccsensory.content.blockentities.LidarSensorBlockEntity;
-import io.github.faceinflux.ccsensory.misc.lidar.EntityRaycastData;
 import io.github.faceinflux.ccsensory.misc.lidar.LidarRaycastManager;
-import io.github.faceinflux.ccsensory.misc.lidar.LidarScanRequest;
 import io.github.faceinflux.ccsensory.misc.lidar.LidarScanResult;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;
 //? if >=1.21.7 {
 //?}
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.*;
+import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 import static io.github.faceinflux.ccsensory.content.blockentities.LidarSensorBlockEntity.*;
 
 public class LidarSensorPeripheral implements IPeripheral {
+    private static final String UPDATE_EVENT_NAME = "lidar_sensor_update";
+
     private final LidarSensorBlockEntity blockEntity;
+
+    private IComputerAccess activeComputer;
 
     public LidarSensorPeripheral(LidarSensorBlockEntity blockEntity) {
         this.blockEntity = blockEntity;
@@ -47,38 +45,46 @@ public class LidarSensorPeripheral implements IPeripheral {
     }
 
     @LuaFunction
-    public MethodResult scan() {
-        if (!blockEntity.startGatheringRequestData(RANGE, castDirections())) {
-            return MethodResult.of(); // If requesting the data gathering failed
+    public MethodResult scan(IComputerAccess computer, ILuaContext context) {
+        if (activeComputer != null || !blockEntity.startGatheringRequestData(RANGE, castDirections())) {
+            return MethodResult.of(); // If requesting the data gathering failed or another computer is waiting.
         }
 
+        activeComputer = computer;
+
         // Made a final array so it can be accessed inside the callback. The linter told me to do this :p
+        ILuaCallback callbackLoop = getScanCallbackLoop();
+
+        return MethodResult.pullEvent(UPDATE_EVENT_NAME, callbackLoop);
+    }
+
+    private @NotNull ILuaCallback getScanCallbackLoop() {
         final Integer[] id = {null};
 
-        ILuaCallback callbackLoop = new ILuaCallback() {
+        return new ILuaCallback() {
             @Override
             public MethodResult resume(@Nullable Object[] args) throws LuaException {
                 id[0] = id[0] == null ? blockEntity.getRequestID() : id[0];
 
                 if (id[0] != null && LidarRaycastManager.isReady(id[0])) {
                     LidarScanResult result = LidarRaycastManager.pullResult(id[0]);
+                    activeComputer = null;
                     return MethodResult.of(generateLuaOutput(result));
                 } else {
-                    return MethodResult.pullEvent(null, this);
+                    return MethodResult.pullEvent(UPDATE_EVENT_NAME, this);
                 }
             }
         };
+    }
 
-        Supplier<MethodResult> pull = () -> {
-            return MethodResult.pullEvent(null, callbackLoop);
-        };
-
-
-
-        return pull.get();
+    public synchronized void update() {
+        if (activeComputer != null) {
+            activeComputer.queueEvent(UPDATE_EVENT_NAME);
+        }
     }
 
     private ObjectLuaTable generateLuaOutput(LidarScanResult scanResult) {
+        // FIXME: ID and name fields are currently wrong
         Map<Integer, ObjectLuaTable> blockDataMap = new HashMap<>();
         Map<Integer, ObjectLuaTable> entityDataMap = new HashMap<>();
 
@@ -135,6 +141,4 @@ public class LidarSensorPeripheral implements IPeripheral {
 
         return list;
     }
-
-
 }

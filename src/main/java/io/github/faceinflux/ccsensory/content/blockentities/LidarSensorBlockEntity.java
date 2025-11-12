@@ -5,7 +5,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import dan200.computercraft.api.lua.ObjectLuaTable;
+import dan200.computercraft.api.peripheral.IPeripheral;
 import io.github.faceinflux.ccsensory.CCSensory;
+import io.github.faceinflux.ccsensory.content.peripherals.LidarSensorPeripheral;
 import io.github.faceinflux.ccsensory.misc.lidar.EntityRaycastData;
 import io.github.faceinflux.ccsensory.misc.lidar.LidarRaycastManager;
 import io.github.faceinflux.ccsensory.misc.lidar.LidarScanRequest;
@@ -45,6 +47,8 @@ public class LidarSensorBlockEntity extends MultiVersionBlockEntity {
         cooldownTick = value;
         this.setChanged();
     }
+
+    private final LidarSensorPeripheral peripheral = new LidarSensorPeripheral(this);
 
     // TEMPORARY STATE STUFF
     // This should _probably_ be stored as NBT, but I don't wanna deal with serializing/deserializing
@@ -135,6 +139,10 @@ public class LidarSensorBlockEntity extends MultiVersionBlockEntity {
     }
 
     public static void tick(Level level, BlockPos pos, BlockState state, LidarSensorBlockEntity e) {
+        if (level.getGameTime() % 10 == 0) {
+            e.peripheral.update();
+        }
+
         e.onCooldown = e.getCooldownTick() > level.getGameTime();
 
         if (e.requestDataGatherRunning) {
@@ -142,5 +150,9 @@ public class LidarSensorBlockEntity extends MultiVersionBlockEntity {
             e.gatherRequestData();
             e.resetRequestDataInput();
         }
+    }
+
+    public IPeripheral peripheral() {
+        return peripheral;
     }
 }

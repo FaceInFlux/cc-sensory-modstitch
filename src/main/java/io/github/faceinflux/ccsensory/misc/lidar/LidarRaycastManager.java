@@ -13,7 +13,7 @@ import java.util.concurrent.LinkedBlockingDeque;
 public final class LidarRaycastManager {
     private static final LinkedBlockingDeque<LidarScanRequest> REQUESTS = new LinkedBlockingDeque<>();
     private static final ArrayList<Integer> IDS = new ArrayList<>();
-    private static final HashMap<Integer, LidarScanResult> RESULTS = new HashMap<>();
+    private static final HashMap<Integer, LidarScanResult> RESULTS = new HashMap<>(); // FIXME Clear out old results if the computer awaiting them nopes out
     private static final LidarRaycastThread THREAD = new LidarRaycastThread();
 
     static {
