@@ -26,8 +26,6 @@ import org.jspecify.annotations.Nullable;
 *///?}
 
 public class LidarSensorBlockEntity extends MultiVersionBlockEntity {
-    // FIXME Constants are wack; put all these in reasonable location(s)
-
     /** The tick at which the cooldown will end */
     private Long cooldownTick = 0L;
     /** Get the tick at which the cooldown will end */
