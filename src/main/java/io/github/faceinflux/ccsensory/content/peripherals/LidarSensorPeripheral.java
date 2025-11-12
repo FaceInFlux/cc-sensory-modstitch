@@ -61,22 +61,20 @@ public class LidarSensorPeripheral implements IPeripheral {
 
             return getScanCallbackLoop();
         } catch (LuaException e) {
+            activeComputer = null;
+            scanResult = null;
             return MethodResult.of((Object) null);
         }
     }
 
     private @NotNull MethodResult getScanCallbackLoop() {
-        return MethodResult.pullEvent(READY_EVENT_NAME, new ILuaCallback() {
-            @Override
-            public MethodResult resume(@Nullable Object[] args) throws LuaException {
-                if (scanResult != null) {
-                    LidarScanResult result = scanResult;
-                    activeComputer = null;
-                    scanResult = null;
-                    return MethodResult.of(generateLuaOutput(result));
-                } else {
-                    return getScanCallbackLoop();
-                }
+        return MethodResult.pullEvent(READY_EVENT_NAME, args -> {
+            if (scanResult != null) {
+                LidarScanResult result = scanResult;
+                scanResult = null;
+                return MethodResult.of(generateLuaOutput(result));
+            } else {
+                return getScanCallbackLoop();
             }
         });
     }
@@ -85,6 +83,7 @@ public class LidarSensorPeripheral implements IPeripheral {
         if (activeComputer != null) {
             this.scanResult = result;
             activeComputer.queueEvent(READY_EVENT_NAME);
+            activeComputer = null; // No longer needed
         }
     }
 
