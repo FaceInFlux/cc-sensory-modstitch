@@ -6,6 +6,7 @@ import com.mojang.logging.LogUtils;
 import io.github.faceinflux.ccsensory.loaders.neoforge.registries.BlockEntityRegistryHandler;
 import io.github.faceinflux.ccsensory.loaders.neoforge.registries.BlockRegistryHandler;
 import io.github.faceinflux.ccsensory.loaders.neoforge.registries.ItemRegistryHandler;
+import io.github.faceinflux.ccsensory.loaders.neoforge.registries.PeripheralRegistryHandler;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import org.slf4j.Logger;
@@ -21,6 +22,7 @@ public class NeoforgeEntrypoint {
         BlockRegistryHandler.registerBlocks(eventBus);
         ItemRegistryHandler.registerItems(eventBus);
         BlockEntityRegistryHandler.registerBlockEntities(eventBus);
+        PeripheralRegistryHandler.registerPeripherals(eventBus);
     }
 }
 *///?}

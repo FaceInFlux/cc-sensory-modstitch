@@ -127,7 +127,7 @@ public class LidarSensorPeripheral implements IPeripheral {
             BlockState block = blockData.getB();
             blockDataMap.put(i, new ObjectLuaTable(Map.of(
                     "relativePosition", new ObjectLuaTable(Map.of(
-                            "x", blockPos.getX(),
+                            "x", blockPos.getX(), // Fixme: Not relative
                             "y", blockPos.getY(),
                             "z", blockPos.getZ()
                     )),

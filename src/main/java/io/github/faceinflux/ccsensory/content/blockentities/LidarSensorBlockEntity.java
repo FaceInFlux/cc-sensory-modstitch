@@ -6,26 +6,20 @@ import java.util.Map;
 
 import dan200.computercraft.api.lua.ObjectLuaTable;
 import dan200.computercraft.api.peripheral.IPeripheral;
-import io.github.faceinflux.ccsensory.CCSensory;
 import io.github.faceinflux.ccsensory.content.peripherals.LidarSensorPeripheral;
-import io.github.faceinflux.ccsensory.misc.lidar.EntityRaycastData;
-import io.github.faceinflux.ccsensory.misc.lidar.LidarRaycastManager;
-import io.github.faceinflux.ccsensory.misc.lidar.LidarScanRequest;
-import io.github.faceinflux.ccsensory.util.blockentities.MultiVersionBlockEntity;
+import io.github.faceinflux.ccsensory.util.cc.PeripheralHoldingBlockEntity;
 import io.github.faceinflux.ccsensory.util.nbt.NBTDataEntry;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.*;
-import org.jspecify.annotations.Nullable;
 //? if >=1.21.7 {
 
 //?} else {
 /*import net.minecraft.nbt.CompoundTag;
 *///?}
 
-public class LidarSensorBlockEntity extends MultiVersionBlockEntity {
+public class LidarSensorBlockEntity extends PeripheralHoldingBlockEntity<LidarSensorPeripheral> {
     /** The tick at which the cooldown will end */
     private Long cooldownTick = 0L;
     /** Get the tick at which the cooldown will end */
@@ -72,7 +66,7 @@ public class LidarSensorBlockEntity extends MultiVersionBlockEntity {
         e.onCooldown = e.getCooldownTick() > level.getGameTime();
     }
 
-    public IPeripheral peripheral() {
+    public LidarSensorPeripheral getPeripheral() {
         return peripheral;
     }
 }

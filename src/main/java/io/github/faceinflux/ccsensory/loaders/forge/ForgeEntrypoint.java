@@ -6,6 +6,7 @@ import com.mojang.logging.LogUtils;
 import io.github.faceinflux.ccsensory.loaders.forge.registries.BlockEntityRegistryHandler;
 import io.github.faceinflux.ccsensory.loaders.forge.registries.BlockRegistryHandler;
 import io.github.faceinflux.ccsensory.loaders.forge.registries.ItemRegistryHandler;
+import io.github.faceinflux.ccsensory.loaders.forge.registries.PeripheralRegistryHandler;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -24,6 +25,7 @@ public class ForgeEntrypoint {
         BlockRegistryHandler.registerBlocks(eventBus);
         ItemRegistryHandler.registerItems(eventBus);
         BlockEntityRegistryHandler.registerBlockEntities(eventBus);
+        PeripheralRegistryHandler.registerPeripherals();
     }
 }
 *///?}
